@@ -108,6 +108,9 @@ export default function CreateClaim({ onCreateClaim }: CreateClaimProps) {
         // Wait a moment for state to update before navigating
         await new Promise(resolve => setTimeout(resolve, 500));
         setLocation("/");
+      } else {
+        console.error("Failed to create claim - API returned null");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Failed to create claim:", error);
