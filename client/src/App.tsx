@@ -161,7 +161,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/">
-        <Dashboard claims={claims} onDeleteClaim={handleDeleteClaim} />
+        <Dashboard claims={claims} />
       </Route>
       {/* Create page removed from navigation - create route disabled */}
       <Route path="/claim/:id">
