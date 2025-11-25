@@ -68,20 +68,50 @@ export default function CreateClaim({ onCreateClaim }: CreateClaimProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.claimantName.trim()) {
+      alert("Please enter claimant name");
+      return;
+    }
+    if (!formData.claimantEmail.trim()) {
+      alert("Please enter email");
+      return;
+    }
+    if (!formData.claimantPhone.trim()) {
+      alert("Please enter phone number");
+      return;
+    }
+    if (!formData.policyNumber.trim()) {
+      alert("Please enter policy number");
+      return;
+    }
+    if (!formData.vehicleInfo.trim()) {
+      alert("Please enter vehicle information");
+      return;
+    }
+    if (!formData.summary.trim()) {
+      alert("Please enter claim summary");
+      return;
+    }
+    if (formData.reportedAmount <= 0) {
+      alert("Please enter a valid amount");
+      return;
+    }
+    
     setLoading(true);
     try {
+      console.log("Submitting claim:", formData);
       const result = await onCreateClaim(formData);
       if (result) {
         console.log("Claim created successfully, navigating to dashboard");
         // Wait a moment for state to update before navigating
         await new Promise(resolve => setTimeout(resolve, 500));
         setLocation("/");
-      } else {
-        console.error("Failed to create claim - no result returned");
-        setLoading(false);
       }
     } catch (error) {
       console.error("Failed to create claim:", error);
+      alert("Error: Failed to create claim");
       setLoading(false);
     }
   };
@@ -283,7 +313,7 @@ export default function CreateClaim({ onCreateClaim }: CreateClaimProps) {
             <Button type="button" variant="outline" onClick={() => setLocation("/")} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="min-w-40">
               {loading ? "Submitting..." : "Submit Claim"}
             </Button>
           </div>

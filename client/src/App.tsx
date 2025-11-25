@@ -125,14 +125,22 @@ function Router() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newClaim),
       });
+      
+      const data = await response.json();
+      
       if (response.ok) {
-        const claim = await response.json();
-        console.log("Claim created:", claim);
-        setClaims((prevClaims) => [claim, ...prevClaims]);
-        return claim;
+        console.log("Claim created:", data);
+        setClaims((prevClaims) => [data, ...prevClaims]);
+        return data;
+      } else {
+        console.error("Failed to create claim:", data);
+        alert(`Error: ${data.error || "Failed to create claim"}`);
+        return null;
       }
     } catch (error) {
       console.error("Failed to create claim:", error);
+      alert("Error: Failed to submit claim. Please try again.");
+      return null;
     }
   };
 
