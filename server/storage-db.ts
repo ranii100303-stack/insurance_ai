@@ -1,22 +1,11 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { eq } from "drizzle-orm";
-import { claims as claimsTable, users as usersTable } from "@shared/db-schema";
-import type { User, InsertUser, Claim, InsertClaim } from "@shared/schema";
+import type { Claim, InsertClaim } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-if (!process.env.DATABASE_URL) {
-  console.warn(
-    "DATABASE_URL not set. Using in-memory storage fallback for development."
-  );
-}
-
-// Fallback in-memory storage for local development
+// In-memory storage for development and production
 export class MemStorage {
-  private users: Map<string, User>;
   private claims: Map<string, Claim>;
 
   constructor() {
-    this.users = new Map();
     this.claims = new Map();
     this.initializeDefaultClaims();
   }
@@ -119,26 +108,6 @@ export class MemStorage {
     defaultClaims.forEach((claim) => this.claims.set(claim.id, claim));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    for (const user of this.users.values()) {
-      if (user.username === username) {
-        return user;
-      }
-    }
-    return undefined;
-  }
-
-  async createUser(user: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const newUser = { ...user, id };
-    this.users.set(id, newUser);
-    return newUser;
-  }
-
   async getClaim(id: string): Promise<Claim | undefined> {
     return this.claims.get(id);
   }
@@ -162,102 +131,5 @@ export class MemStorage {
   }
 }
 
-// Database storage with Drizzle ORM
-export class DatabaseStorage {
-  private db: ReturnType<typeof drizzle>;
-
-  constructor(connectionString: string) {
-    this.db = drizzle({ connectionString });
-  }
-
-  async getUser(id: string): Promise<User | undefined> {
-    const result = await this.db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, id))
-      .limit(1);
-    return result[0] as User | undefined;
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await this.db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.username, username))
-      .limit(1);
-    return result[0] as User | undefined;
-  }
-
-  async createUser(user: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const newUser = { ...user, id };
-    await this.db.insert(usersTable).values(newUser);
-    return newUser;
-  }
-
-  async getClaim(id: string): Promise<Claim | undefined> {
-    const result = await this.db
-      .select()
-      .from(claimsTable)
-      .where(eq(claimsTable.id, id))
-      .limit(1);
-
-    if (!result[0]) return undefined;
-
-    return this.formatClaim(result[0]);
-  }
-
-  async getAllClaims(): Promise<Claim[]> {
-    const results = await this.db.select().from(claimsTable);
-    return results.map((row) => this.formatClaim(row));
-  }
-
-  async createClaim(claim: InsertClaim): Promise<Claim> {
-    const id = `CLM-${Date.now()}-${randomUUID().substring(0, 8)}`;
-    const newClaim = {
-      ...claim,
-      id,
-      photos: claim.photos || [],
-    };
-    await this.db.insert(claimsTable).values(newClaim);
-    return newClaim as Claim;
-  }
-
-  async deleteClaim(id: string): Promise<boolean> {
-    const result = await this.db
-      .delete(claimsTable)
-      .where(eq(claimsTable.id, id));
-    return result.rowCount > 0;
-  }
-
-  private formatClaim(row: any): Claim {
-    return {
-      id: row.id,
-      claimantName: row.claimant_name,
-      summary: row.summary,
-      reportedAmount: Number(row.reported_amount),
-      status: row.status,
-      submittedDate: row.submitted_date,
-      claimantEmail: row.claimant_email,
-      claimantPhone: row.claimant_phone,
-      policyNumber: row.policy_number,
-      vehicleInfo: row.vehicle_info,
-      photos: row.photos,
-      assessmentResults: row.assessment_results,
-    };
-  }
-}
-
-// Determine which storage to use
-export function getStorage(): MemStorage | DatabaseStorage {
-  if (process.env.DATABASE_URL) {
-    console.log("Using Neon PostgreSQL database");
-    return new DatabaseStorage(process.env.DATABASE_URL) as any;
-  } else {
-    console.log("Using in-memory storage (development mode)");
-    return new MemStorage();
-  }
-}
-
-// Export default instance
-export const storage = getStorage();
+// Export storage instance
+export const storage = new MemStorage();
