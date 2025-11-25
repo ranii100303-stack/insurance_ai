@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ThemeToggle } from "@/components/theme-toggle";
+import ClaimPhotos from "@/components/claim-photos";
 import { 
   ArrowLeft, 
-  Image as ImageIcon, 
   Bot, 
   Calculator, 
   ShieldAlert, 
@@ -207,18 +207,7 @@ export default function ClaimDetail({ claim, onUpdateClaim }: ClaimDetailProps) 
                 <CardTitle>Submitted Photos</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {[1, 2, 3, 4].map((num) => (
-                    <div
-                      key={num}
-                      className="aspect-video border-2 border-dashed border-border rounded-md bg-muted/20 flex flex-col items-center justify-center gap-2"
-                      data-testid={`placeholder-photo-${num}`}
-                    >
-                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Photo {num}</span>
-                    </div>
-                  ))}
-                </div>
+                <ClaimPhotos photos={claim.photos} claimantName={claim.claimantName} />
               </CardContent>
             </Card>
 

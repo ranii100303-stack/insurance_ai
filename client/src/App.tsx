@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,9 +6,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import Dashboard from "@/pages/dashboard";
+import CreateClaim from "@/pages/create-claim";
 import ClaimDetail from "@/pages/claim-detail";
 import NotFound from "@/pages/not-found";
-import type { Claim } from "@shared/schema";
+import type { Claim, InsertClaim } from "@shared/schema";
 
 const initialClaims: Claim[] = [
   {
@@ -87,6 +88,27 @@ const initialClaims: Claim[] = [
 
 function Router() {
   const [claims, setClaims] = useState<Claim[]>(initialClaims);
+  const [loading, setLoading] = useState(true);
+
+  const loadClaims = async () => {
+    try {
+      const response = await fetch("/api/claims");
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Loaded claims from API:", data);
+        setClaims(data.length > 0 ? data : initialClaims);
+      }
+    } catch (error) {
+      console.error("Failed to load claims:", error);
+      setClaims(initialClaims);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadClaims();
+  }, []);
 
   const handleUpdateClaim = (claimId: string, updates: Partial<Claim>) => {
     setClaims((prevClaims) =>
@@ -96,10 +118,46 @@ function Router() {
     );
   };
 
+  const handleCreateClaim = async (newClaim: InsertClaim) => {
+    try {
+      const response = await fetch("/api/claims", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newClaim),
+      });
+      if (response.ok) {
+        const claim = await response.json();
+        console.log("Claim created:", claim);
+        setClaims((prevClaims) => [claim, ...prevClaims]);
+        return claim;
+      }
+    } catch (error) {
+      console.error("Failed to create claim:", error);
+    }
+  };
+
+  const handleDeleteClaim = async (claimId: string) => {
+    try {
+      const response = await fetch(`/api/claims/${claimId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setClaims((prevClaims) => prevClaims.filter((c) => c.id !== claimId));
+        return true;
+      }
+    } catch (error) {
+      console.error("Failed to delete claim:", error);
+    }
+    return false;
+  };
+
   return (
     <Switch>
       <Route path="/">
-        <Dashboard claims={claims} />
+        <Dashboard claims={claims} onDeleteClaim={handleDeleteClaim} />
+      </Route>
+      <Route path="/create-claim">
+        <CreateClaim onCreateClaim={handleCreateClaim} />
       </Route>
       <Route path="/claim/:id">
         {(params) => {

@@ -13,6 +13,7 @@ export const claimSchema = z.object({
   claimantPhone: z.string(),
   policyNumber: z.string(),
   vehicleInfo: z.string(),
+  photos: z.array(z.string()).optional(),
   assessmentResults: z.object({
     recommendedPayout: z.number(),
     confidence: z.number(),
@@ -23,6 +24,9 @@ export const claimSchema = z.object({
 
 export type Claim = z.infer<typeof claimSchema>;
 export type ClaimStatus = z.infer<typeof claimStatusEnum>;
+
+export const insertClaimSchema = claimSchema.omit({ id: true });
+export type InsertClaim = z.infer<typeof insertClaimSchema>;
 
 export const agentMessageSchema = z.object({
   agent: z.string(),
