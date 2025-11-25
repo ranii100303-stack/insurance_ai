@@ -61,7 +61,10 @@ export default function ClaimDetail({ claim, onUpdateClaim }: ClaimDetailProps) 
 
   useEffect(() => {
     if (isAssessing) {
-      let currentIndex = 0;
+      // Show first message immediately
+      setVisibleMessages([agentMessages[0]]);
+      
+      let currentIndex = 1;
       const interval = setInterval(() => {
         if (currentIndex < agentMessages.length) {
           setVisibleMessages((prev) => [...prev, agentMessages[currentIndex]]);
@@ -82,7 +85,8 @@ export default function ClaimDetail({ claim, onUpdateClaim }: ClaimDetailProps) 
 
       return () => clearInterval(interval);
     }
-  }, [isAssessing, agentMessages, mockAssessmentResults, claim.id, onUpdateClaim]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAssessing, agentMessages, mockAssessmentResults, claim.id]);
 
   const handleRunAssessment = () => {
     setIsAssessing(true);
@@ -254,7 +258,7 @@ export default function ClaimDetail({ claim, onUpdateClaim }: ClaimDetailProps) 
                       <div className="h-2 w-2 bg-primary rounded-full animate-pulse" />
                       Processing claim assessment...
                     </div>
-                    {visibleMessages.map((msg, idx) => (
+                    {visibleMessages.filter(msg => msg && msg.icon).map((msg, idx) => (
                       <div
                         key={idx}
                         className="flex gap-4 animate-in fade-in slide-in-from-top-2 duration-500"
@@ -276,7 +280,7 @@ export default function ClaimDetail({ claim, onUpdateClaim }: ClaimDetailProps) 
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     {visibleMessages.length > 0 && (
                       <div className="space-y-4 pb-6 border-b border-border">
-                        {visibleMessages.map((msg, idx) => (
+                        {visibleMessages.filter(msg => msg && msg.icon).map((msg, idx) => (
                           <div key={idx} className="flex gap-4" data-testid={`agent-message-${idx}`}>
                             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                               {getIcon(msg.icon)}
