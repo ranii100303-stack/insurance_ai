@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import Dashboard from "@/pages/dashboard";
-import CreateClaim from "@/pages/create-claim";
 import ClaimDetail from "@/pages/claim-detail";
 import NotFound from "@/pages/not-found";
 import type { Claim, InsertClaim } from "@shared/schema";
@@ -164,9 +163,7 @@ function Router() {
       <Route path="/">
         <Dashboard claims={claims} onDeleteClaim={handleDeleteClaim} />
       </Route>
-      <Route path="/create-claim">
-        <CreateClaim onCreateClaim={handleCreateClaim} />
-      </Route>
+      {/* Create page removed from navigation - create route disabled */}
       <Route path="/claim/:id">
         {(params) => {
           const claim = claims.find((c) => c.id === params.id);
