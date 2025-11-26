@@ -22,6 +22,9 @@ const initialClaims: Claim[] = [
     claimantPhone: "(555) 234-5678",
     policyNumber: "POL-8472-9361",
     vehicleInfo: "2022 Honda Accord EX-L",
+    photos: [
+    "https://feherlawfirm.com/wp-content/uploads/damaged-in-heavy-car-accident-vehicles-after-colli-2023-11-27-05-22-40-utc_1920x1280.webp"
+    ],
   },
   {
     id: "CLM-2024-0848",
@@ -34,6 +37,9 @@ const initialClaims: Claim[] = [
     claimantPhone: "(555) 876-5432",
     policyNumber: "POL-3829-4721",
     vehicleInfo: "2023 Tesla Model 3 Long Range",
+    photos: [
+    "https://www.milehighdents.net/wp-content/webp-express/webp-images/uploads/2025/06/hail-damage-total-vehicle.jpeg.webp"
+    ],
   },
   {
     id: "CLM-2024-0849",
@@ -52,6 +58,10 @@ const initialClaims: Claim[] = [
       fraudScore: 8,
       suggestedPath: "Repair",
     },
+    photos: [
+    "https://imgs.search.brave.com/ogB0LFr3V7HHdVrm5uesHC_K0Ob0_dArZHjlFWSTZ2c/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS82/NGYzMTRmYTkyZjY2/YTBjY2M5NTBjNWUv/NjVkZDdiOWI1Mjdj/MWU4YjdlMDM3YTQ1/X3NvbWVvbmUlMjBo/aXQlMjBteSUyMHdp/bmclMjBtaXJyb3Il/MjBhbmQlMjBkcm92/ZSUyMG9mZiUyMHdo/YXQlMjB0byUyMGRv/LmpwZw",
+    "https://www.thelawplace.com/wp-content/uploads/2021/11/vehicle-damaged-after-a-sideswipe-accident-768x511.jpg"
+    ],
   },
   {
     id: "CLM-2024-0850",
@@ -64,6 +74,10 @@ const initialClaims: Claim[] = [
     claimantPhone: "(555) 621-9384",
     policyNumber: "POL-9182-5473",
     vehicleInfo: "2020 Ford F-150 XLT",
+    photos: [
+    "https://imgs.search.brave.com/UFxfOFKfzcDh5MoBOHSjMMaHkVEy56OOFQfMS0-EKCI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9lcGlj/dmluLnMzLmFtYXpv/bmF3cy5jb20vYmxv/Zy9taW4vMTJhZjdm/ZDMtOGY4OS00MTIw/LTk1OTYtZmY0Y2Iy/NDU2MWM5LmpwZw",
+    "https://imgs.search.brave.com/gUsHTOh-SVifMu0ZYUS0cGox-gT85XWKsrmghmyEJN4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2x1YnRvdWFyZWcu/Y29tL2QyL2F0dGFj/aG1lbnRzLzEyLzEy/MzQ3LTM4ZmQxMDJk/YTFlYTI4YmI4OTY2/YjdiNTVjMTc0MjNm/LmpwZw"
+    ],
   },
   {
     id: "CLM-2024-0851",
@@ -82,6 +96,9 @@ const initialClaims: Claim[] = [
       fraudScore: 3,
       suggestedPath: "Repair",
     },
+    photos: [
+    "https://imgs.search.brave.com/O0v2Xn7GLYW-HNdQc3j6OtE1WaBPXmb6X0GbhtCKa_g/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9saDMu/Z29vZ2xldXNlcmNv/bnRlbnQuY29tL3lL/REZDMVBHaURrZHpz/UjAwczJWejFXMnlN/SW5pQ2xtSC1EVFB5/RXI2WnVNeGVYSndk/QW9mN1liUFIwaVQw/aGtGemJRZ09hUHFK/Z0RJX01oUkV5R1hP/UWt0MzlQZGZfeDVV/dHpuT0g5V0E2YnM1/c19ZT3FhZ0xiOVA0/M0xXczBhV1dpMnNp/T0E9czA"
+    ],
   },
 ];
 
@@ -161,7 +178,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/">
-        <Dashboard claims={claims} />
+        <Dashboard claims={claims} onDeleteClaim={handleDeleteClaim} />
       </Route>
       {/* Create page removed from navigation - create route disabled */}
       <Route path="/claim/:id">
